@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <!--
+        Customize this policy to fit your own app's needs. For more guidance, see:
+            https://github.com/apache/cordova-plugin-whitelist/blob/master/README.md#content-security-policy
+        Some notes:
+            * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
+            * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
+            * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
+                * Enable inline JS: add 'unsafe-inline' to default-src
+        -->
+        <meta http-equiv="Content-Security-Policy">
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <link rel="stylesheet" type="text/css" href="css/index.css">
+        <script src="js/jquery.min.js"></script>
+        <link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css">
+        <script src="js/jquery.mobile-1.4.5.min.js"></script>
+        
+        <style>
+            #deletePhoto {
+                display: none;
+              }
+              
+            #img{ 
+                display: none;
+                height:50%;
+                width:50%;
+               }
+        </style>
+    </head>
+    <body>
+        <div id="home" data-role="page">
+            <div role="main" class="ui-content">
+              <div class="ui-field-contain">
+                <label for="name_input">Full Name</label>
+                <input type="text" name="name_input" id="name_input" placeholder="Enter your full name">
+              </div>
+              <div class="ui-field-contain">
+                <label for="email_input">Email:</label>
+                <input type="text" name="email_input" id="email_input" placeholder="Enter your email">
+              </div>
+              <div class="ui-field-contain">
+                <label for="age_input">Age:</label>
+                <input name="age_input" id="age_input" value="20" min="0" max="110" type="range">
+              </div>
+              <div class="ui-field-contain">
+                <div class="ui-grid-a">
+                  <label for="photo_input">Photo:</label>
+                  <div class="ui-block-a">
+                      <button id="takePhoto" class="ui-btn ui-icon-camera ui-btn-icon-left" role="button">Click to upload</button>
+                  </div>
+                  <div class="ui-block-b" id="div_deletePhoto">
+                      <button id="deletePhoto" class="ui-btn ui-icon-delete ui-btn-icon-left" role="button">Delete Photo</button>
+                  </div>
+                  <img id="img" class="img-responsive" alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="/>
+                </div>
+              </div>
+              <div data-role="popup" id="mainPopup">
+              
+              </div>
+                
+              <button id="saveInfo" class="ui-btn ui-icon-star ui-btn-icon-left" role="button">Save Info</button>
+              <button id="getInfo" class="ui-btn ui-icon-action ui-btn-icon-left" role="button">Get Info</button>
+              <button id="clearForm" class="ui-btn ui-btn-icon-left ui-icon-recycle" role="button">Clear Form</button>
+            </div>
+          </div>
+        
+        
+        <script type="text/javascript" src="cordova.js"></script>
+        
+        <script type="text/javascript">
+            var jqmReady = $.Deferred();
+            var pgReady = $.Deferred();
+
+            $(document).on("pagecreate",  jqmReady.resolve);
+            document.addEventListener("deviceready",pgReady.resolve,false);
+            window.addEventListener("load",pgReady.resolve,false);
+         
+           $.when(jqmReady, pgReady).then(function () {           
+                var email= $("#email_input");
+                var name= $("#name_input");
+                var img= $("#img");
+                var age=$("#age_input");
+                var image = document.getElementById("img");
+                var del= document.getElementById("deletePhoto");
+                
+                var db = window.openDatabase("mainDB_1", "1.0", "Main DB", 100);
+                
+                
+                
+                $("#saveInfo").click(function(event){
+                    var userEmail = email.val();
+                    var userName = name.val();
+                    var imgPath = img.attr('src');
+                    var userAge = age.val();
+                    
+                    if(userEmail === "" && userName === ""){
+                        navigator.notification.alert("Missing both name and email");
+                    }
+                    else if(userName === ""){
+                        navigator.notification.alert("Missing name");
+                    }
+                    else if(userEmail === ""){
+                        navigator.notification.alert("Missing email");
+                    }
+                    else{
+                        db.transaction(function(tx) {
+                            tx.executeSql('CREATE TABLE IF NOT EXISTS UserList (email TEXT PRIMARY KEY, name TEXT, imgPath TEXT,'+
+                                    'userAge INTEGER)');
+
+                            tx.executeSql('INSERT INTO UserList VALUES (?,?,?,?)', [userEmail, userName, imgPath, userAge]);
+
+                        }, function(error) {
+                            console.log('Transaction ERROR: ' + error.message);
+                        }, function() {
+                            console.log('Populated database OK');
+                        });
+                    }
+                    
+                    
+                });
+                
+                $("#getInfo").click(function(event){
+                    event.preventDefault();
+                    
+                    var emailInput = email.val();
+                    if (emailInput.length < 3) {
+                        alert("Email is too short!");
+			return;
+                    }
+                    
+                    db.executeSql('SELECT * FROM UserList WHERE email LIKE "' + emailInput + '"', [], function(rs) {
+                      name.val(  rs.rows.item(0).name );
+                      img.attr('src', rs.rows.item(0).imgPath);
+                      age.val(  rs.rows.item(0).userAge );
+  
+                    }, function(error) {
+                      console.log('SELECT SQL statement ERROR: ' + error.message);
+                    });
+
+                });
+                
+                $("#clearForm").click(function(event){
+                    email.val("");
+                    name.val("");
+                    img.attr("src","");
+                    image.style.display="none";
+                    del.style.display="none";
+                });
+                
+                $("#takePhoto").click(function(event){
+                    takePhoto();
+                });
+                
+                $("#deletePhoto").click(function(event){
+                    event.preventDefault();
+                    image.src = "";
+                    image.style.display="none";
+                    del.style.display="none";
+                });
+                
+                function takePhoto(){                   
+                    var options = {
+                        quality: 25,
+                        encodingType: Camera.EncodingType.JPEG,
+                        destinationType: Camera.DestinationType.FILE_URL,
+                        allowEdit: true
+                    };
+                    
+                    function successCamera(imageData) {
+                        // Display buttons and photo item
+                        image.style.display="inline";
+                        del.style.display="inline";
+
+                        image.src = imageData;
+                    }
+
+                    function failCamera(message) {
+                        alert('Failed because: ' + message);
+                    }
+                    navigator.camera.getPicture(successCamera, failCamera, options);
+                }
+        });
+        </script>
+    </body>
+</html>
