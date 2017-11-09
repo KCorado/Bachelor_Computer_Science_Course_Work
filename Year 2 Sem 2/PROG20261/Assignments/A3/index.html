@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<!--
+Student: Kevin Corado
+Course: PROG20261
+Project: Coradok_AssignmentN3
+-->
+
+<html>
+<head>
+  <title>Assignment N3 Template</title>
+        <meta http-equiv="Content-Security-Policy" />
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.js"></script>
+
+<style>
+    .ui-listview, .ui-listview>li {
+	padding-left:0.25em;
+    }
+    
+    #home #side #movie-list img {
+	width:70px;
+	height: auto;
+    }
+    
+    #returnHome {
+        width:50%;
+    }
+    
+    #side .ui-block-a{
+        width:20%;
+    }
+    #side .ui-block-b{
+        width:80%;
+    }
+
+    [data-role="footer"] {
+        margin-top:20px;
+    }
+    [data-role="content"] {
+       margin-top: 10px;
+    }
+</style>
+</head>
+
+<body>
+
+    <div data-role="page" id="home">
+      <div data-role="header">
+        <h3>Movie List</h3>
+      </div>
+
+      <div data-role="content">
+            <div class="ui-grid-a">
+            <div class="ui-block-a">
+                <div data-role="fieldcontain">
+                   <label for="search-input">Search:</label>
+                   <input type="search" name="search-input" id="search-input" value="" data-clear-btn="true"/>
+                </div>
+            </div>
+            </div>
+          
+          <ul data-role="listview" id="movie-list">
+          </ul>
+      </div>
+
+      <div data-role="footer">
+        <h1>&copy; 2017</h1>
+      </div>
+    </div>
+    
+    <!--                -->
+    <div data-role="page" id="side">
+        <div data-role="header">
+          <h3>Movie Info</h3>
+        </div>
+
+        <div data-role="content">
+            <div class="ui-grid-a">
+            <div class="ui-block-a">
+                
+            </div>
+            <div class="ui-block-b">
+                
+            </div>
+            <div class="ui-block-c">
+                
+            </div>
+            </div>
+        </div>
+
+        <div data-role="footer">
+          <h1>&copy; 2017</h1>
+        </div>
+      </div>
+    
+    
+    
+
+
+<script>
+$(document).on('pageinit', '#home', function(){ 
+    // selectors
+    var searchTxt = $("#search-input");
+    
+    // end - selectors
+    
+    // Please replace API key with your own right away!
+    var API_key='e7229ac78623848c6f7be3de83d08512';
+    
+    
+    
+    var movieInfo = {
+        id : null,
+        result : null
+    };
+ 
+    
+    
+    searchTxt.keypress(function(e){
+        if(e.which == 13){//Enter key pressed
+            $('#movie-list').html('');
+            var url = 'http://api.themoviedb.org/3/',
+                mode = 'search/movie?query=',
+                movieName = '&query='+encodeURI(searchTxt.val()), 
+                key = '&api_key=' + API_key; 
+            
+            
+        
+            $.ajax({
+            url: url + mode + key + movieName ,
+            dataType: "jsonp",
+            async: true,
+            success: parseJSONP,
+            error: function (request,error) {
+                alert('Network error has occurred please try again!');
+            }
+            });
+        }
+        
+      });
+      
+      function parseJSONP(result){ 
+            movieInfo.result = result.results;
+            $.each(result.results, function(i, row) {
+                $('#movie-list').append('<li><a href="#side" data-id="' + row.id + '"><img src="http://image.tmdb.org/t/p/w92'+row.poster_path+'"/><h3>' + row.original_title + '</h3><p>Popularity: ' + parseFloat(row.popularity).toFixed(2) + '</p></a></li>');
+                
+                $('#movie-list li').last().on("vclick", function(e){
+                    
+                    
+                    var currentMovie = movieInfo.result[$(this).index()];
+                    $("#side .ui-block-a").html('<a href="#home" id="returnHome" class="ui-btn ui-icon-action ui-btn-icon-left">Return Home</a><img src="http://image.tmdb.org/t/p/w92'+currentMovie.poster_path+'"/>');
+                    $("#side .ui-block-b").html("<h3>" + row.original_title + "</h3>" + "<p>" + currentMovie.overview + "</p>" + "<p>Release Date: " + currentMovie.release_date + '</p>' + "<p>Popularity: " + currentMovie.popularity + "</p>" );
+                    
+                });
+            });
+            $('#movie-list').listview('refresh');
+    };   
+    
+
+});
+</script>
+
+</body>
+</html>
