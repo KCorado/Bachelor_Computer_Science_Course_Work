@@ -29,6 +29,10 @@ https://htmlpreview.github.io/?https://github.com/KCorado/Bachelor_Computer_Scie
   <br/>
 * Assignment 2 -> [Testing does not work]
   - This assignment was an example of use of working with Cordova applications, tested using an Android device. The goal from the assignment was to utilize a camera plugin to allow use of the Android device's camera to upload an image. From there, a photo would be taken, user information such as name and email would be inputed, and the user would save the profile which would be stored into a MySQL database. The user would be able to retrive the profile information and photo using an email which was previously given.
+  - In addition, the Android APK is available to download [here](https://github.com/KCorado/Bachelor_Computer_Science_Course_Work/blob/master/Year_2_Sem_2/PROG20261/Assignments/A2/APK)
+  
+  ###### Known Issues: Saving and getting profiles does not function. However everything from taking photos to input does.
+ 
   <br/>
 * Assignment 3 -> [Testing does not work]
   - This assignment was an example of use of both jQuery Mobile, in addition to use of APIs, specifically The Movie Database API ("https://www.themoviedb.org/"). Note, the use of the API was for educational purposes. 
