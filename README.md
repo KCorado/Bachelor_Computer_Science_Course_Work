@@ -25,11 +25,11 @@ This course touched on developing hybrid mobile applications, initially using ol
 * Assignment 1 -> [Test Me!!](
 https://htmlpreview.github.io/?https://github.com/KCorado/Bachelor_Computer_Science_Course_Work/blob/master/Year_2_Sem_2/PROG20261/Assignments/A1/index.html)
 
+
   - Assignment Requirements: Every time you click on the "Add Red" or "Add Blue" buttons a new square of the corresponding color is created. Both size and square location are randomly generated. However, the squares must always stay inside the window and never be placed on top of the buttons or text. You can remove the buttons by clicking on the corresponding "remove" button or "Remove All". In this assignment you must use jQuery for selectors, DOM manipulation, and events. 
   <br/>
-* Assignment 2 -> [Testing does not work]
+* Assignment 2 -> Android APK is available to download [here](https://github.com/KCorado/Bachelor_Computer_Science_Course_Work/blob/master/Year_2_Sem_2/PROG20261/Assignments/A2/APK)
   - This assignment was an example of use of working with Cordova applications, tested using an Android device. The goal from the assignment was to utilize a camera plugin to allow use of the Android device's camera to upload an image. From there, a photo would be taken, user information such as name and email would be inputed, and the user would save the profile which would be stored into a MySQL database. The user would be able to retrive the profile information and photo using an email which was previously given.
-  - In addition, the Android APK is available to download [here](https://github.com/KCorado/Bachelor_Computer_Science_Course_Work/blob/master/Year_2_Sem_2/PROG20261/Assignments/A2/APK)
   
   ###### Known Issues: Saving and getting profiles does not function. However everything from taking photos to input does.
  
